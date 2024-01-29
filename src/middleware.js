@@ -1,13 +1,54 @@
-// mw มีการใช้งาน Nextresponse เพราะงั้นเราเลยต้องทำการ import ในส่วนที่เป็น next จากตัว build-in ของ next/server
-import { NextResponse } from "next/server"
+import Customer from "../database/models/customer";
 
-//เมื่อสร้างหรือเรียกใช้ mw แล้ว เราก็จะ export ฟังชัน mw แล้วก็ทำการรับ request มา request ตรงนี้จะทำอะไร? เราก็กำหนด lohgic การทำงานตัว mw ตรงนี้ได้
-export function middleware(req) {
-    console.log(req,url); //ถ้ามี req เข้ามาให้มัน console.log req เข้ามาก่อน แล้วก็ให้มันเตะไปทำงานที่ถัดไปได้
-    return NextResponse,next();
+export async function getAllCustomers(res) {
+  try {
+    const getAllCustomers = await Customer.find({});
+    res.status(200).json(getAllCustomers);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 }
 
-//สมมติว่าเรามี mw เราจัดการได้โดยสร้างเงื่อนไขว่า mw ตรงนี้มัน match กับ path ไหน ส่วนไหน ให้มันมา match ที่ mw ได้
-export const config = {
-    matcher: 'admin/:path*', //เวลาที่มันมีอะไรเข้ามาแล้วมันตรงกับ path ที่เราตั้งไว้ เช่น path admin path อะไรก็แล้วแต่ที่ตามหลังด้วย / ถ้าข้างหน้ามัน match กับ admin มันก็จะไปทำงานใน middleware ข้างบน (โค้ดที่ 2)
+export async function createCustomer(req, res) {
+  try {
+    const newCustomer = await Customer.create(req.body);
+    res.status(200).json(newCustomer);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getUniqueCustomer() {
+  try {
+    const uniqueCustomer = await Customer.findById(id);
+    return uniqueCustomer;
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateUniqueCustomer(req, res) {
+  const { query } = req;
+  const { id } = query;
+
+  try {
+    const updatedUniqueCustomer = await Customer.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    res.status(200).json(updatedUniqueCustomer);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteUniqueCustomer(req, res) {
+  const { query } = req;
+  const { id } = query;
+
+  try {
+    const deletingUniqueCustomer = await Customer.findByIdAndDelete(id, req.body);
+    res.status(200).json(deletingUniqueCustomer);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 }
